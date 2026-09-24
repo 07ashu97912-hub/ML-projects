@@ -47,22 +47,25 @@ experience = st.number_input(
 # 3. Prediction Logic
 if st.button("Predict Salary"):
     if selected_model == "Linear Regression (Current)":
-        # Make sure assets loaded successfully before predicting
         if lr is not None and ss is not None:
             try:
                 # Format input for scikit-learn (needs to be a 2D array)
                 input_data = np.array([[experience]])
                 scaled_input = ss.transform(input_data)
-                prediction = float(lr.predict(scaled_input)[0])
+                
+                # Make the prediction
+                raw_prediction = lr.predict(scaled_input)
+                
+                # FIX: Flatten the array to a single item securely, regardless of its shape
+                prediction = float(np.asarray(raw_prediction).item())
 
-                # Display result (Removed the duplicate success box)
+                # Display result
                 st.success(f"Estimated Salary: ${prediction:,.2f}")
             except Exception as e:
                 st.error(f"An error occurred during prediction: {e}")
         else:
-            st.error(
-                "Cannot predict. Please fix the missing files listed above."
-            )
+            st.error("Cannot predict. Please fix the missing files listed above.")
+
 
     elif selected_model == "Advanced Model (Coming Soon)":
         st.info("This model is currently under development. Stay tuned!")
